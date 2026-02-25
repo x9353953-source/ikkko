@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>拼图Ultimate (Pro Max)</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#F2F2F7">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐋</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- 基础样式 --- */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #F2F2F7;
+            color: #000000;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 200px;
+            overscroll-behavior-y: none;
+        }
+        /* 隐藏滚动条 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* iOS 卡片样式 */
+        .ios-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+            contain: content;
+        }
+        
+        /* 列表分割线 */
+        .ios-divide > div:not(:last-child), 
+        .ios-divide > label:not(:last-child),
+        .ios-divide > details > .divide-y > div:not(:last-child) { 
+            border-bottom: 0.5px solid #C6C6C8;
+        }
+        
+        /* 输入框重置 */
+        input[type=number], select, input[type=text] { 
+            appearance: none;
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        
+        /* iOS 滑动条 */
+        input[type=range] { 
+            -webkit-appearance: none;
+            width: 100%; background: transparent; height: 24px; margin: 0; padding: 0; cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track { 
+            width: 100%; height: 4px; background: #E5E5EA; border-radius: 2px; border: none;
+        }
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15); border: 0.5px solid rgba(0,0,0,0.04); margin-top: -9px; transition: transform 0.1s;
+        }
+        input[type=range]:active::-webkit-slider-thumb { transform: scale(1.1); }
+        
+        /* 动画与模态框 */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            z-index: 100; display: flex; align-items: center; justify-content: center; 
+        }
+        .checkered-bg { 
+            background-color: #eee;
+            background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+        .action-sheet { 
+            position: fixed; bottom: 0; left: 0; right: 0; background: #F2F2F7;
+            border-top-left-radius: 16px; border-top-right-radius: 16px; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 101; padding: 20px; padding-bottom: 40px;
+        }
+        .action-sheet.show { transform: translateY(0); }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 结果区域 - 修改：固定窗口滚动 */
+        .result-scroll-container {
+            min-height: 50px; 
+            max-height: 50vh; 
+            overflow-y: auto; 
+            background: #f9f9f9;
+            padding: 10px;
+            contain: content;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 拖拽上传遮罩 */
+        #dragOverlay {
+            position: fixed;
+            inset: 0; background: rgba(0,122,255,0.1); backdrop-filter: blur(2px);
+            z-index: 999; display: none; justify-content: center; align-items: center;
+            border: 4px dashed #007AFF; margin: 10px;
+            border-radius: 20px; pointer-events: none;
+        }
+        #dragOverlay.active { display: flex; }
+
+        .sortable-ghost { opacity: 0.4; background: #E5E5EA; } 
+        
+        #imageGrid {
+            content-visibility: auto;
+            contain-intrinsic-size: 300px;
+        }
+        .thumbnail-item { 
+            contain: paint layout;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "sortablejs": "https://esm.sh/sortablejs@^1.15.6",
+    "jszip": "https://esm.sh/jszip@^3.10.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
